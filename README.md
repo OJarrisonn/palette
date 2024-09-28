@@ -47,8 +47,8 @@ Any suggestion is taken in consideration. Open an issue describing your problem/
 
 ## Future Plans
 
-- [ ] support for json
-- [ ] support for yaml
+- [x] support for json
+- [x] support for yaml
 - [ ] support for xml
 - [ ] support for nuon
 - [ ] read a palette from piped `stdin`

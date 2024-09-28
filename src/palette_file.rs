@@ -1,5 +1,7 @@
 use std::{error::Error, fmt::Debug};
 
+use yaml_rust2::{Yaml, YamlLoader};
+
 use crate::palette::Palette;
 
 /// Create a `PaletteFile` from a file path
@@ -12,6 +14,8 @@ pub fn from_path(path: String) -> Box<dyn PaletteFile> {
         Box::new(TomlFile(path.to_string())) as Box<dyn PaletteFile>
     } else if path.ends_with(".json") {
         Box::new(JsonFile(path.to_string())) as Box<dyn PaletteFile>
+    } else if path.ends_with(".yaml") || path.ends_with(".yml") {
+        Box::new(YamlFile(path.to_string())) as Box<dyn PaletteFile>
     } else {
         Box::new(UnsupportedFile(path.to_string())) as Box<dyn PaletteFile>
     }
@@ -45,6 +49,29 @@ impl PaletteFile for JsonFile {
     fn parse(&self) -> Result<Palette, Box<dyn Error>> {
         let contents = std::fs::read_to_string(&self.0)?;
         let table: std::collections::HashMap<String, String> = serde_json::from_str(&contents)?;
+        Palette::try_from(table).map_err(Into::into)
+    }
+}
+
+/// A YAML file containing a color palette
+///
+/// Stores the path to the file
+#[derive(Debug)]
+pub struct YamlFile(String);
+
+impl PaletteFile for YamlFile {
+    fn parse(&self) -> Result<Palette, Box<dyn Error>> {
+        let contents = std::fs::read_to_string(&self.0)?;
+        let docs = YamlLoader::load_from_str(&contents)?;
+        let doc = &docs[0];
+        let mut table = std::collections::HashMap::new();
+        if let Yaml::Hash(hash) = doc {
+            for (key, value) in hash {
+                if let (Yaml::String(k), Yaml::String(v)) = (key, value) {
+                    table.insert(k.clone(), v.clone());
+                }
+            }
+        }
         Palette::try_from(table).map_err(Into::into)
     }
 }
