@@ -1,9 +1,18 @@
 [package]
-name = "palette"
-version = "0.2.1"
+name = "palette-cli"
+version = "0.2.2"
 edition = "2021"
 license-file = "LICENSE"
+readme = "README.md"
 description = "A simple CLI tool to visualize color palettes."
+repository = "https://github.com/OJarrisonn/palette"
+authors = ["OJarrisonn <jhmtv10@gmail.com>"]
+categories = ["command line utilities"]
+keywords = ["palette", "color", "cli", "graphics", "visualization"]
+
+[[bin]]
+name = "pal"
+path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4.5.18", features = ["derive"] }

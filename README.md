@@ -15,8 +15,8 @@ $ cargo install palette
 > Notice: palette requires truecolor support
 
 ```bash
-$ palette --help # Help page
-$ palette colors.toml other.toml foo.toml # Show a side-by-side comparison of the palettes
+$ pal --help # Help page
+$ pal colors.toml other.toml foo.toml # Show a side-by-side comparison of the palettes
 ``` 
 
 `palette` works by opening `.toml` files that are a simple map associating a color name to a color hexcode. For instance:
@@ -52,4 +52,5 @@ Any suggestion is taken in consideration. Open an issue describing your problem/
 - [ ] support for xml
 - [ ] support for nuon
 - [ ] read a palette from piped `stdin`
+- [ ] edit a palette
 - [ ] usage as a library(?)
