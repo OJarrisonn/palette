@@ -50,7 +50,7 @@ Any suggestion is taken in consideration. Open an issue describing your problem/
 - [x] support for json
 - [x] support for yaml
 - [ ] support for xml
-- [ ] support for nuon
+- [x] support for nuon
 - [ ] read a palette from piped `stdin`
 - [ ] edit a palette
 - [ ] usage as a library(?)

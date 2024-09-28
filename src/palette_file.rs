@@ -1,4 +1,4 @@
-use std::{error::Error, fmt::Debug};
+use std::{collections::HashMap, error::Error, fmt::Debug};
 
 use yaml_rust2::{Yaml, YamlLoader};
 
@@ -16,6 +16,8 @@ pub fn from_path(path: String) -> Box<dyn PaletteFile> {
         Box::new(JsonFile(path.to_string())) as Box<dyn PaletteFile>
     } else if path.ends_with(".yaml") || path.ends_with(".yml") {
         Box::new(YamlFile(path.to_string())) as Box<dyn PaletteFile>
+    } else if path.ends_with(".nuon") {
+        Box::new(NuonFile(path.to_string())) as Box<dyn PaletteFile>
     } else {
         Box::new(UnsupportedFile(path.to_string())) as Box<dyn PaletteFile>
     }
@@ -34,7 +36,7 @@ pub struct TomlFile(String);
 impl PaletteFile for TomlFile {
     fn parse(&self) -> Result<Palette, Box<dyn Error>> {
         let contents = std::fs::read_to_string(&self.0)?;
-        let table: std::collections::HashMap<String, String> = toml::from_str(&contents)?;
+        let table: HashMap<String, String> = toml::from_str(&contents)?;
         Palette::try_from(table).map_err(Into::into)
     }
 }
@@ -48,7 +50,7 @@ pub struct JsonFile(String);
 impl PaletteFile for JsonFile {
     fn parse(&self) -> Result<Palette, Box<dyn Error>> {
         let contents = std::fs::read_to_string(&self.0)?;
-        let table: std::collections::HashMap<String, String> = serde_json::from_str(&contents)?;
+        let table: HashMap<String, String> = serde_json::from_str(&contents)?;
         Palette::try_from(table).map_err(Into::into)
     }
 }
@@ -64,14 +66,49 @@ impl PaletteFile for YamlFile {
         let contents = std::fs::read_to_string(&self.0)?;
         let docs = YamlLoader::load_from_str(&contents)?;
         let doc = &docs[0];
-        let mut table = std::collections::HashMap::new();
+        let mut table = HashMap::new();
+
         if let Yaml::Hash(hash) = doc {
             for (key, value) in hash {
                 if let (Yaml::String(k), Yaml::String(v)) = (key, value) {
                     table.insert(k.clone(), v.clone());
+                } else {
+                    return Err("Invalid YAML file".into());
                 }
             }
+        } else {
+            return Err("Invalid YAML file".into());
         }
+
+        Palette::try_from(table).map_err(Into::into)
+    }
+}
+
+/// A NUON file containing a color palette
+///
+/// Stores the path to the file
+#[derive(Debug)]
+pub struct NuonFile(String);
+
+impl PaletteFile for NuonFile {
+    fn parse(&self) -> Result<Palette, Box<dyn Error>> {
+        let contents = std::fs::read_to_string(&self.0)?;
+        let value = nuon::from_nuon(&contents, None)?;
+
+        let mut table = HashMap::new();
+
+        if let nu_protocol::Value::Record { val, .. } = value {
+            for (k, v) in val.iter() {
+                if let nu_protocol::Value::String { val: v, .. } = v {
+                    table.insert(k.clone(), v.clone());
+                } else {
+                    return Err("Invalid NUON file".into());
+                }
+            }
+        } else {
+            return Err("Invalid NUON file".into());
+        }
+
         Palette::try_from(table).map_err(Into::into)
     }
 }
