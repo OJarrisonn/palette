@@ -2,7 +2,10 @@ use std::{collections::HashMap, fmt::Display};
 
 use colored::Colorize;
 
-use crate::{color::Color, palette};
+use crate::{
+    color::Color,
+    palette::{self, Palette},
+};
 
 #[derive(Debug, Default)]
 pub struct Collection {
@@ -26,7 +29,7 @@ impl Collection {
         }
     }
 
-    pub fn with_added(mut self, pallete: palette::Palette) -> Self {
+    pub fn with_added(mut self, pallete: Palette) -> Self {
         self.add(pallete);
         self
     }
@@ -73,12 +76,15 @@ impl Display for Collection {
 
                 match color {
                     None => write!(f, "|{}", elem)?,
-                    Some(color@Color(r, g, b)) => write!(f, "|{}", 
+                    Some(color @ Color(r, g, b)) => write!(
+                        f,
+                        "|{}",
                         if color.magnitude() < Color::THRESHOLD {
                             elem.white()
                         } else {
                             elem.black()
-                        }.on_truecolor(*r, *g, *b)
+                        }
+                        .on_truecolor(*r, *g, *b)
                     )?,
                 }
             }
