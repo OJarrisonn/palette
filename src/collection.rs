@@ -73,7 +73,13 @@ impl Display for Collection {
 
                 match color {
                     None => write!(f, "|{}", elem)?,
-                    Some(Color(r, g, b)) => write!(f, "|{}", elem.on_truecolor(*r, *g, *b))?,
+                    Some(color@Color(r, g, b)) => write!(f, "|{}", 
+                        if color.magnitude() < Color::THRESHOLD {
+                            elem.white()
+                        } else {
+                            elem.black()
+                        }.on_truecolor(*r, *g, *b)
+                    )?,
                 }
             }
 

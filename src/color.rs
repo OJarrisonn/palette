@@ -3,9 +3,20 @@ use std::{
     str::FromStr,
 };
 
-
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct Color(pub u8, pub u8, pub u8);
+
+impl Color {
+    pub const THRESHOLD: f64 = 196.0;
+
+    pub fn magnitude(&self) -> f64 {
+        let r = self.0 as f64;
+        let g = self.1 as f64;
+        let b = self.2 as f64;
+
+        (r * r + g * g + b * b).sqrt()
+    }
+}
 
 impl FromStr for Color {
     type Err = &'static str;
