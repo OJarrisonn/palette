@@ -2,17 +2,19 @@ use std::error::Error;
 
 use clap::Parser;
 use collection::Collection;
-use toml::map::Map;
+use palette::Palette;
+use palette_file::PaletteFile;
 
 mod collection;
 mod color;
 mod palette;
+mod palette_file;
 
 #[derive(Parser, Debug)]
 #[clap(author, version)]
 /// palette is a CLI tool that helps you to visualize your color palettes on the terminal.
 /// Truecolor support is required.
-/// 
+///
 /// The tool reads .toml files containing color palettes and displays them in a table for easy comparison.
 struct Cli {
     /// The .toml files containing the palettes to be shown
@@ -22,21 +24,17 @@ struct Cli {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
-    let contents = args
+
+    let files = args
         .files
         .into_iter()
-        .map(std::fs::read_to_string)
-        .collect::<Result<Vec<_>, _>>()?;
+        .map(palette_file::from_path)
+        .collect::<Vec<_>>();
 
-    let maps = contents
+    let palettes = files
         .into_iter()
-        .map(|c| toml::from_str(&c))
-        .collect::<Result<Vec<Map<String, toml::Value>>, _>>()?;
-
-    let palettes = maps
-        .into_iter()
-        .map(palette::Palette::try_from)
-        .collect::<Result<Vec<palette::Palette>, _>>()?;
+        .map(|file| file.parse())
+        .collect::<Result<Vec<Palette>, _>>()?;
 
     let collection = palettes
         .into_iter()
