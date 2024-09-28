@@ -1,6 +1,6 @@
 [package]
 name = "palette-cli"
-version = "0.2.6"
+version = "0.3.0"
 edition = "2021"
 license-file = "LICENSE"
 readme = "README.md"

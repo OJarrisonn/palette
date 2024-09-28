@@ -16,11 +16,12 @@ $ cargo install palette-cli
 
 ```bash
 $ pal --help # Help page
-$ pal colors.toml other.toml foo.toml # Show a side-by-side comparison of the palettes
+$ pal colors.toml other.yaml foo.json # Show a side-by-side comparison of the palettes
 ``` 
 
-`palette` works by opening `.toml` files that are a simple map associating a color name to a color hexcode. For instance:
+`palette` works by reading toml, json, yaml and nuon files that are a simple map associating a color name to a color hexcode. For instance:
 
+### TOML
 ```toml
 black = "#3B4252"
 red = "#BF616A"
@@ -31,6 +32,49 @@ purple = "#B48EAD"
 cyan = "#88C0D0"
 white = "#E5E9F0"
 name = "Nord"
+```
+
+### JSON
+```json
+{
+    "black": "#3B4252",
+    "red": "#BF616A",
+    "green": "#A3BE8C",
+    "yellow": "#EBCB8B",
+    "blue": "#81A1C1",
+    "purple": "#B48EAD",
+    "cyan": "#88C0D0",
+    "white": "#E5E9F0",
+    "name": "Nord"
+}
+```
+
+### YAML
+```yaml
+black: "#3B4252"
+red: "#BF616A"
+green: "#A3BE8C"
+yellow: "#EBCB8B"
+blue: "#81A1C1"
+purple: "#B48EAD"
+cyan: "#88C0D0"
+white: "#E5E9F0"
+name: "Nord"
+```
+
+### NUON
+```nuon
+{
+    black: "#3B4252",
+    red: "#BF616A",
+    green: "#A3BE8C",
+    yellow: "#EBCB8B",
+    blue: "#81A1C1",
+    purple: "#B48EAD",
+    cyan: "#88C0D0",
+    white: "#E5E9F0",
+    name: "Nord",
+}
 ```
 
 A special field `name` may be provided to set the palette color. If any field besides `name` is not a valid hexcolor `palette` will display an error.
@@ -47,10 +91,7 @@ Any suggestion is taken in consideration. Open an issue describing your problem/
 
 ## Future Plans
 
-- [x] support for json
-- [x] support for yaml
 - [ ] support for xml
-- [x] support for nuon
 - [ ] read a palette from piped `stdin`
 - [ ] edit a palette
 - [ ] usage as a library(?)

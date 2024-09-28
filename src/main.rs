@@ -14,9 +14,9 @@ mod palette_file;
 /// palette is a CLI tool that helps you to visualize your color palettes on the terminal.
 /// Truecolor support is required.
 ///
-/// The tool reads .toml files containing color palettes and displays them in a table for easy comparison.
+/// The tool reads .toml, .yaml/yml, .json and .nuon files containing color palettes and displays them in a table for easy comparison.
 struct Cli {
-    /// The .toml files containing the palettes to be shown
+    /// The files containing the palettes to be shown
     #[clap(required = true)]
     files: Vec<String>,
 }
