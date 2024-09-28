@@ -1,14 +1,16 @@
 [package]
 name = "palette-cli"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 license-file = "LICENSE"
 readme = "README.md"
 description = "A simple CLI tool to visualize color palettes."
 repository = "https://github.com/OJarrisonn/palette"
 authors = ["OJarrisonn <jhmtv10@gmail.com>"]
-categories = ["command line utilities"]
+categories = ["command-line-utilities"]
 keywords = ["palette", "color", "cli", "graphics", "visualization"]
+exclude = ["assets/*", "target/*", "Cargo.lock"]
+rust-version = "1.80.0"
 
 [[bin]]
 name = "pal"

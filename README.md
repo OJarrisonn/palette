@@ -7,7 +7,7 @@ A simple CLI tool to visualize color palettes.
 ## Instalattion
 
 ```bash
-$ cargo install palette
+$ cargo install palette-cli
 ```
 
 ## Usage
