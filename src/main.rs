@@ -3,7 +3,6 @@ use std::error::Error;
 use clap::Parser;
 use collection::Collection;
 use palette::Palette;
-use palette_file::PaletteFile;
 
 mod collection;
 mod color;
