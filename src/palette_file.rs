@@ -1,13 +1,13 @@
-use std::{collections::HashMap, error::Error, fmt::Debug};
+use std::{collections::HashMap, error::Error, fmt::Debug, path::Path};
 
 use yaml_rust2::{Yaml, YamlLoader};
 
 use crate::palette::Palette;
 
 /// Create a `PaletteFile` from a file path
-/// 
+///
 /// The file type is determined by the file extension, currently supporting `.toml` and `.json`
-/// 
+///
 /// Unsupported extensions will return an `UnsupportedFile`, which will return an error when parsed
 pub fn from_path(path: String) -> Box<dyn PaletteFile> {
     if path.ends_with(".toml") {
@@ -36,13 +36,21 @@ pub struct TomlFile(String);
 impl PaletteFile for TomlFile {
     fn parse(&self) -> Result<Palette, Box<dyn Error>> {
         let contents = std::fs::read_to_string(&self.0)?;
-        let table: HashMap<String, String> = toml::from_str(&contents)?;
+        let mut table: HashMap<String, String> = toml::from_str(&contents)?;
+        table.insert(
+            "name".into(),
+            Path::new(&self.0)
+                .file_stem()
+                .unwrap()
+                .to_string_lossy()
+                .to_string(),
+        );
         Palette::try_from(table).map_err(Into::into)
     }
 }
 
 /// A JSON file containing a color palette
-/// 
+///
 /// Stores the path to the file
 #[derive(Debug)]
 pub struct JsonFile(String);
@@ -50,7 +58,17 @@ pub struct JsonFile(String);
 impl PaletteFile for JsonFile {
     fn parse(&self) -> Result<Palette, Box<dyn Error>> {
         let contents = std::fs::read_to_string(&self.0)?;
-        let table: HashMap<String, String> = serde_json::from_str(&contents)?;
+        let mut table: HashMap<String, String> = serde_json::from_str(&contents)?;
+        if !table.contains_key("name") {
+            table.insert(
+                "name".into(),
+                Path::new(&self.0)
+                    .file_stem()
+                    .unwrap()
+                    .to_string_lossy()
+                    .to_string(),
+            );
+        }
         Palette::try_from(table).map_err(Into::into)
     }
 }
@@ -78,6 +96,17 @@ impl PaletteFile for YamlFile {
             }
         } else {
             return Err("Invalid YAML file".into());
+        }
+
+        if !table.contains_key("name") {
+            table.insert(
+                "name".into(),
+                Path::new(&self.0)
+                    .file_stem()
+                    .unwrap()
+                    .to_string_lossy()
+                    .to_string(),
+            );
         }
 
         Palette::try_from(table).map_err(Into::into)
@@ -109,6 +138,17 @@ impl PaletteFile for NuonFile {
             return Err("Invalid NUON file".into());
         }
 
+        if !table.contains_key("name") {
+            table.insert(
+                "name".into(),
+                Path::new(&self.0)
+                    .file_stem()
+                    .unwrap()
+                    .to_string_lossy()
+                    .to_string(),
+            );
+        }
+
         Palette::try_from(table).map_err(Into::into)
     }
 }
@@ -116,7 +156,7 @@ impl PaletteFile for NuonFile {
 /// An unsupported file type
 ///
 /// Stores the path to the file
-/// 
+///
 /// Will return an error when parsed
 #[derive(Debug)]
 pub struct UnsupportedFile(String);
